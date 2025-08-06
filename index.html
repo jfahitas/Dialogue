@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dialogue Facilitation Practice</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: #500000;
+            color: white;
+            padding: 20px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: #ecf0f1;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #500000;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .scenario-intro {
+            background: #f8e8e8;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border-left: 4px solid #500000;
+        }
+
+        .scenario-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .scenario-description {
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        .learning-objective {
+            background: #fffce0;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #ffc107;
+        }
+
+        .objective-label {
+            font-weight: bold;
+            color: #8a6914;
+            margin-bottom: 5px;
+        }
+
+        .conversation-panel {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 25px;
+            margin: 25px 0;
+        }
+
+        .speaker {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 15px;
+            flex-shrink: 0;
+            font-size: 24px;
+        }
+
+        .fire-dept { background: #500000; }
+        .police-dept { background: #500000; }
+        .ems-dept { background: #500000; }
+        .facilitator { background: #500000; }
+
+        .message {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            flex: 1;
+        }
+
+        .speaker-name {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #2c3e50;
+        }
+
+        .question-prompt {
+            background: #f0f8f0;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #27ae60;
+        }
+
+        .prompt-text {
+            font-size: 16px;
+            font-weight: 500;
+            color: #1e7e34;
+            margin-bottom: 15px;
+        }
+
+        .response-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .response-btn {
+            padding: 15px 20px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .response-btn:hover {
+            border-color: #500000;
+            background: #f8f8f8;
+        }
+
+        .response-btn.inquiry {
+            border-left: 4px solid #27ae60;
+        }
+
+        .response-btn.advocacy {
+            border-left: 4px solid #ffc107;
+        }
+
+        .response-btn.selected {
+            background: #f8e8e8;
+            border-color: #500000;
+        }
+
+        .feedback-panel {
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .feedback-panel.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .feedback-good {
+            border-color: #27ae60;
+            background: #f0f8f0;
+        }
+
+        .feedback-needs-work {
+            border-color: #ffc107;
+            background: #fffdf0;
+        }
+
+        .feedback-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feedback-good .feedback-title {
+            color: #27ae60;
+        }
+
+        .feedback-needs-work .feedback-title {
+            color: #8a6914;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .nav-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .next-btn {
+            background: #500000;
+            color: white;
+        }
+
+        .next-btn:hover:not(:disabled) {
+            background: #400000;
+        }
+
+        .back-btn {
+            background: #6c757d;
+            color: white;
+        }
+
+        .back-btn:hover:not(:disabled) {
+            background: #5a6268;
+        }
+
+        .step-info {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .completion-panel {
+            background: #f0f8f0;
+            border: 2px solid #27ae60;
+            border-radius: 8px;
+            padding: 25px;
+            text-align: center;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .completion-panel.show {
+            display: block;
+        }
+
+        .completion-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #155724;
+            margin-bottom: 15px;
+        }
+
+        .score-summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .score-item {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #c3e6cb;
+        }
+
+        .score-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #500000;
+        }
+
+        .score-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Dialogue Facilitation Practice</h1>
+            <p>Inquiry-Based Conversation Skills Training</p>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <div class="content">
+            <div id="intro-screen">
+                <div class="scenario-intro">
+                    <div class="scenario-title">Welcome to Dialogue Facilitation Practice</div>
+                    <div class="scenario-description">
+                        In this practice session, you'll work through three different scenarios to develop your inquiry-based facilitation skills. Each scenario presents real challenges that emergency service coordinators face when facilitating multi-agency discussions.
+                    </div>
+                    <div class="learning-objective">
+                        <div class="objective-label">Learning Objective:</div>
+                        Practice moving conversations from positions to interests using inquiry-based questions rather than advocacy-based approaches.
+                    </div>
+                </div>
+                
+                <div class="navigation">
+                    <div></div>
+                    <button class="nav-btn next-btn" onclick="startScenario(1)">Start Practice</button>
+                </div>
+            </div>
+
+            <div id="scenario-screen" class="hidden">
+                <div class="scenario-intro">
+                    <div class="scenario-title" id="scenarioTitle">Equipment Procurement Disagreement</div>
+                    <div class="scenario-description" id="scenarioDescription">
+                        Multiple agencies are meeting to decide on new equipment purchases. Each department has strong preferences for different solutions. Your role is to facilitate a conversation that uncovers underlying needs rather than defending positions.
+                    </div>
+                    <div class="learning-objective">
+                        <div class="objective-label">Focus:</div>
+                        <span id="scenarioFocus">Understanding underlying needs vs. defending preferences</span>
+                    </div>
+                </div>
+
+                <div class="conversation-panel">
+                    <div class="speaker" id="currentSpeaker">
+                        <div class="avatar fire-dept">AF</div>
+                        <div class="message">
+                            <div class="speaker-name">Alex Fire - Fire Department</div>
+                            <div id="speakerMessage">We absolutely need the heavy-duty rescue vehicle. Our department has been requesting this for months, and it's critical for our operations.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question-prompt">
+                    <div class="prompt-text">How do you respond as the facilitator?</div>
+                    <div class="response-options" id="responseOptions">
+                        <button class="response-btn advocacy" onclick="selectResponse(0, 'advocacy')">
+                            "Alex, can you explain why the heavy-duty vehicle is the best choice over other options?"
+                        </button>
+                        <button class="response-btn inquiry" onclick="selectResponse(1, 'inquiry')">
+                            "What specific challenges are you currently facing that you're hoping this equipment will address?"
+                        </button>
+                        <button class="response-btn inquiry" onclick="selectResponse(2, 'inquiry')">
+                            "Help us understand what 'critical for operations' means in practical terms for your team."
+                        </button>
+                    </div>
+                </div>
+
+                <div class="feedback-panel" id="feedbackPanel">
+                    <div class="feedback-title" id="feedbackTitle">
+                        <span>✓</span> Excellent Choice!
+                    </div>
+                    <div id="feedbackText">
+                        This inquiry-based question helps move the conversation from Alex's position (wanting the vehicle) to understanding the underlying interests and needs. It encourages deeper exploration without challenging their request directly.
+                    </div>
+                </div>
+
+                <div class="navigation">
+                    <button class="nav-btn back-btn" onclick="goBack()" id="backBtn">Back</button>
+                    <div class="step-info">
+                        <span id="stepInfo">Step 1 of 9</span>
+                    </div>
+                    <button class="nav-btn next-btn" onclick="nextStep()" id="nextBtn" disabled>Continue</button>
+                </div>
+            </div>
+
+            <div id="completion-screen" class="hidden">
+                <div class="completion-panel show">
+                    <div class="completion-title">Practice Complete!</div>
+                    <p>You've successfully completed all three dialogue facilitation scenarios.</p>
+                    
+                    <div class="score-summary">
+                        <div class="score-item">
+                            <div class="score-value" id="inquiryScore">78%</div>
+                            <div class="score-label">Inquiry Questions</div>
+                        </div>
+                        <div class="score-item">
+                            <div class="score-value" id="totalQuestions">9</div>
+                            <div class="score-label">Questions Asked</div>
+                        </div>
+                        <div class="score-item">
+                            <div class="score-value" id="overallScore">85</div>
+                            <div class="score-label">Overall Score</div>
+                        </div>
+                    </div>
+                    
+                    <p><strong>Key Takeaway:</strong> Effective dialogue facilitation focuses on inquiry (understanding needs) rather than advocacy (pushing solutions). This helps teams move from positions to interests and find collaborative solutions.</p>
+                </div>
+                
+                <div class="navigation">
+                    <button class="nav-btn back-btn" onclick="restart()">Restart Practice</button>
+                    <div></div>
+                    <button class="nav-btn next-btn" onclick="window.close()">Complete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 0;
+        let currentScenario = 1;
+        let inquiryCount = 0;
+        let advocacyCount = 0;
+        let responses = [];
+
+        const scenarios = [
+            {
+                title: "Equipment Procurement Disagreement",
+                description: "Multiple agencies are meeting to decide on new equipment purchases. Each department has strong preferences for different solutions. Your role is to facilitate a conversation that uncovers underlying needs rather than defending positions.",
+                focus: "Understanding underlying needs vs. defending preferences",
+                steps: [
+                    {
+                        speaker: "Alex Fire - Fire Department",
+                        avatar: "fire-dept",
+                        message: "We absolutely need the heavy-duty rescue vehicle. Our department has been requesting this for months, and it's critical for our operations.",
+                        options: [
+                            {text: "Alex, can you explain why the heavy-duty vehicle is the best choice over other options?", type: "advocacy"},
+                            {text: "What specific challenges are you currently facing that you're hoping this equipment will address?", type: "inquiry"},
+                            {text: "Help us understand what 'critical for operations' means in practical terms for your team.", type: "inquiry"}
+                        ]
+                    },
+                    {
+                        speaker: "Sam Police - Police Department",
+                        avatar: "police-dept",
+                        message: "I disagree with Alex. The patrol vehicle upgrade would serve multiple departments and be more cost-effective for everyone.",
+                        options: [
+                            {text: "Sam, what makes you think the patrol vehicle would be more beneficial than Alex's suggestion?", type: "advocacy"},
+                            {text: "What underlying needs would the patrol vehicle upgrade address across departments?", type: "inquiry"},
+                            {text: "How do you see the cost-effectiveness playing out in terms of meeting everyone's needs?", type: "inquiry"}
+                        ]
+                    },
+                    {
+                        speaker: "Jordan EMS - Emergency Medical Services",
+                        avatar: "ems-dept",
+                        message: "Both options sound expensive. We need to think practically about our budget constraints and what we can actually afford.",
+                        options: [
+                            {text: "Jordan, what budget amount do you think would be reasonable for this purchase?", type: "advocacy"},
+                            {text: "What concerns do you have about the budget impact of these different options?", type: "inquiry"},
+                            {text: "What would need to be true about any equipment purchase for it to work within our financial reality?", type: "inquiry"}
+                        ]
+                    }
+                ]
+            },
+            {
+                title: "After-Action Learning Dialogue",
+                description: "Following a multi-agency emergency response, different departments had varying experiences with coordination. The goal is to learn from the experience rather than assign blame.",
+                focus: "Understanding system dynamics vs. identifying individual failures",
+                steps: [
+                    {
+                        speaker: "Chief Williams - Incident Commander",
+                        avatar: "fire-dept",
+                        message: "The communication breakdown during the incident was unacceptable. Someone needs to be held accountable for this failure.",
+                        options: [
+                            {text: "Chief, who specifically do you think should be held accountable for the communication issues?", type: "advocacy"},
+                            {text: "What patterns in our communication system might have contributed to this breakdown?", type: "inquiry"},
+                            {text: "Help us understand what you observed during the communication challenges.", type: "inquiry"}
+                        ]
+                    },
+                    {
+                        speaker: "Lt. Garcia - Operations Lead",
+                        avatar: "police-dept",
+                        message: "I felt like we were all working from different information. My team was confused about priorities and who was in charge of what.",
+                        options: [
+                            {text: "Lt. Garcia, why didn't your team ask for clarification when they were confused?", type: "advocacy"},
+                            {text: "What would have helped your team feel more clear about priorities and roles during the incident?", type: "inquiry"},
+                            {text: "What did the confusion look like from your team's perspective on the ground?", type: "inquiry"}
+                        ]
+                    },
+                    {
+                        speaker: "Dr. Chen - Medical Response Coordinator",
+                        avatar: "ems-dept",
+                        message: "From our side, we were getting conflicting directions from multiple sources. It made it very difficult to coordinate patient care effectively.",
+                        options: [
+                            {text: "Dr. Chen, couldn't your team have followed the standard medical protocols regardless of the conflicting directions?", type: "advocacy"},
+                            {text: "What kind of coordination would have worked better for patient care in this type of incident?", type: "inquiry"},
+                            {text: "What would ideal communication look like from a medical response perspective?", type: "inquiry"}
+                        ]
+                    }
+                ]
+            },
+            {
+                title: "Innovation Dialogue",
+                description: "Traditional community outreach methods aren't connecting with diverse populations. The team needs to develop new approaches based on collective experience.",
+                focus: "Building on collective experience vs. expert recommendations",
+                steps: [
+                    {
+                        speaker: "Maria Santos - Community Liaison",
+                        avatar: "ems-dept",
+                        message: "Our current outreach programs are failing to connect with the Latino community. We need a completely different approach that actually works.",
+                        options: [
+                            {text: "Maria, what specific new approach do you recommend we implement for Latino outreach?", type: "advocacy"},
+                            {text: "What have you noticed about the current programs that isn't resonating with the Latino community?", type: "inquiry"},
+                            {text: "What insights do you have about what would feel authentic and valuable to Latino families?", type: "inquiry"}
+                        ]
+                    },
+                    {
+                        speaker: "Officer Kim - Community Police",
+                        avatar: "police-dept",
+                        message: "We're seeing the same issue with Asian communities. People seem hesitant to engage with us, even when we're offering helpful services.",
+                        options: [
+                            {text: "Officer Kim, have you tried using translators or bilingual officers for these interactions?", type: "advocacy"},
+                            {text: "What do you think might be behind the hesitation you're seeing in Asian communities?", type: "inquiry"},
+                            {text: "What approaches have you seen work well in building trust with hesitant communities?", type: "inquiry"}
+                        ]
+                    },
+                    {
+                        speaker: "Rev. Johnson - Community Leader",
+                        avatar: "fire-dept",
+                        message: "In my experience, people want to see genuine partnership, not just agencies coming in with pre-made programs. They want their voices heard in the design process.",
+                        options: [
+                            {text: "Rev. Johnson, what specific partnership model would you suggest we implement?", type: "advocacy"},
+                            {text: "What does genuine partnership look like from the community's perspective?", type: "inquiry"},
+                            {text: "How have you seen communities respond when they feel their voices are truly heard in program design?", type: "inquiry"}
+                        ]
+                    }
+                ]
+            }
+        ];
+
+        const feedbackMessages = {
+            inquiry: [
+                "Excellent choice! This inquiry-based question helps move the conversation from positions to underlying interests and needs.",
+                "Great question! You're encouraging deeper exploration without challenging their position directly.",
+                "Perfect approach! This inquiry opens up space for understanding rather than defending.",
+                "Well done! This question helps uncover the real needs behind their stated position.",
+                "Excellent facilitation! You're helping them reflect on their underlying concerns."
+            ],
+            advocacy: [
+                "This is more of an advocacy approach. Consider how an inquiry-based question might encourage more reflection and exploration.",
+                "While this question seeks information, it might put them on the defensive. Try a question that explores underlying needs.",
+                "This approach might limit exploration. Consider asking 'what' or 'how' questions that encourage deeper thinking.",
+                "This question could feel challenging. Try rephrasing to encourage them to share their perspective more openly.",
+                "Consider shifting to inquiry to better understand their underlying concerns and needs."
+            ]
+        };
+
+        function startScenario(scenarioNum) {
+            currentScenario = scenarioNum;
+            currentStep = 0;
+            document.getElementById('intro-screen').classList.add('hidden');
+            document.getElementById('scenario-screen').classList.remove('hidden');
+            loadStep();
+        }
+
+        function getCharacterIcon(avatarType) {
+            switch(avatarType) {
+                case 'fire-dept': return '🚒';
+                case 'police-dept': return '👮‍♂️';
+                case 'ems-dept': return '🚑';
+                default: return '👤';
+            }
+        }
+
+        function loadStep() {
+            const scenario = scenarios[currentScenario - 1];
+            const step = scenario.steps[currentStep];
+            
+            // Update scenario info
+            document.getElementById('scenarioTitle').textContent = scenario.title;
+            document.getElementById('scenarioDescription').textContent = scenario.description;
+            document.getElementById('scenarioFocus').textContent = scenario.focus;
+            
+            // Update speaker
+            const avatarClasses = {
+                'fire-dept': 'fire-dept',
+                'police-dept': 'police-dept',
+                'ems-dept': 'ems-dept'
+            };
+            
+            document.getElementById('currentSpeaker').innerHTML = `
+                <div class="avatar ${avatarClasses[step.avatar]}">
+                    ${getCharacterIcon(step.avatar)}
+                </div>
+                <div class="message">
+                    <div class="speaker-name">${step.speaker}</div>
+                    <div id="speakerMessage">${step.message}</div>
+                </div>
+            `;
+            
+            function getCharacterIcon(avatarType) {
+                switch(avatarType) {
+                    case 'fire-dept': return '🚒';
+                    case 'police-dept': return '👮‍♂️';
+                    case 'ems-dept': return '🚑';
+                    default: return '👤';
+                }
+            }
+            
+            // Update response options
+            const optionsContainer = document.getElementById('responseOptions');
+            optionsContainer.innerHTML = '';
+            step.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.className = `response-btn ${option.type}`;
+                button.textContent = option.text;
+                button.onclick = () => selectResponse(index, option.type);
+                optionsContainer.appendChild(button);
+            });
+            
+            // Update navigation
+            const totalSteps = scenarios.reduce((sum, s) => sum + s.steps.length, 0);
+            const currentStepNumber = scenarios.slice(0, currentScenario - 1).reduce((sum, s) => sum + s.steps.length, 0) + currentStep + 1;
+            document.getElementById('stepInfo').textContent = `Step ${currentStepNumber} of ${totalSteps}`;
+            document.getElementById('nextBtn').disabled = true;
+            document.getElementById('feedbackPanel').classList.remove('show');
+            
+            // Update progress
+            updateProgress(currentStepNumber / totalSteps);
+        }
+
+        function selectResponse(index, type) {
+            // Mark button as selected
+            document.querySelectorAll('.response-btn').forEach(btn => btn.classList.remove('selected'));
+            document.querySelectorAll('.response-btn')[index].classList.add('selected');
+            
+            // Track response
+            responses.push({scenario: currentScenario, step: currentStep, type: type});
+            if (type === 'inquiry') {
+                inquiryCount++;
+            } else {
+                advocacyCount++;
+            }
+            
+            // Show feedback
+            showFeedback(type);
+            
+            // Enable next button
+            document.getElementById('nextBtn').disabled = false;
+        }
+
+        function showFeedback(type) {
+            const feedbackPanel = document.getElementById('feedbackPanel');
+            const feedbackTitle = document.getElementById('feedbackTitle');
+            const feedbackText = document.getElementById('feedbackText');
+            
+            if (type === 'inquiry') {
+                feedbackPanel.className = 'feedback-panel feedback-good show';
+                feedbackTitle.innerHTML = '<span>✓</span> Excellent Choice!';
+            } else {
+                feedbackPanel.className = 'feedback-panel feedback-needs-work show';
+                feedbackTitle.innerHTML = '<span>⚠</span> Consider This...';
+            }
+            
+            const messages = feedbackMessages[type];
+            feedbackText.textContent = messages[Math.floor(Math.random() * messages.length)];
+        }
+
+        function nextStep() {
+            currentStep++;
+            const scenario = scenarios[currentScenario - 1];
+            
+            if (currentStep >= scenario.steps.length) {
+                // Move to next scenario
+                currentScenario++;
+                currentStep = 0;
+                
+                if (currentScenario > scenarios.length) {
+                    // All scenarios complete
+                    showCompletion();
+                    return;
+                }
+            }
+            
+            loadStep();
+        }
+
+        function goBack() {
+            if (currentStep > 0) {
+                currentStep--;
+                loadStep();
+            } else if (currentScenario > 1) {
+                currentScenario--;
+                currentStep = scenarios[currentScenario - 1].steps.length - 1;
+                loadStep();
+            } else {
+                // Go back to intro
+                document.getElementById('scenario-screen').classList.add('hidden');
+                document.getElementById('intro-screen').classList.remove('hidden');
+            }
+        }
+
+        function showCompletion() {
+            document.getElementById('scenario-screen').classList.add('hidden');
+            document.getElementById('completion-screen').classList.remove('hidden');
+            
+            const total = inquiryCount + advocacyCount;
+            const inquiryPercentage = Math.round((inquiryCount / total) * 100);
+            const overallScore = Math.round((inquiryPercentage * 0.7) + (30)); // Base score + inquiry bonus
+            
+            document.getElementById('inquiryScore').textContent = inquiryPercentage + '%';
+            document.getElementById('totalQuestions').textContent = total;
+            document.getElementById('overallScore').textContent = overallScore;
+            
+            updateProgress(1);
+        }
+
+        function updateProgress(percentage) {
+            document.getElementById('progressFill').style.width = (percentage * 100) + '%';
+        }
+
+        function restart() {
+            currentStep = 0;
+            currentScenario = 1;
+            inquiryCount = 0;
+            advocacyCount = 0;
+            responses = [];
+            
+            document.getElementById('completion-screen').classList.add('hidden');
+            document.getElementById('intro-screen').classList.remove('hidden');
+            updateProgress(0);
+        }
+    </script>
+</body>
+</html>
